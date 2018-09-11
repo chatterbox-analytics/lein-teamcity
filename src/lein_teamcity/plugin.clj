@@ -35,7 +35,10 @@
 
 (defn add-teamcity-uberjar-artifact-reporting [f & args]
   (let [artifact (apply f args)]
-    (println (tc-msg  :publishArtifacts artifact))))
+    (println (tc-msg :setParameter :name "lein.project.version" :value (:version (first args))))
+    (println (tc-msg :setParameter :name "lein.project.name" :value (:group (first args))))
+    (println (tc-msg :setParameter :name "lein.project.group" :value (:name (first args))))
+    (println (tc-msg :publishArtifacts artifact))))
 
 (defn add-teamcity-task-reporting [f & [name :as args]]
   (println (tc-msg :blockOpened :name name))
@@ -61,9 +64,9 @@
                        (fn [s#]
                          (-> s#
                              (.replaceAll "\\|" "||")
-                             (.replaceAll "'"   "|'")
-                             (.replaceAll "\n"  "|n")
-                             (.replaceAll "\r"  "|r")
+                             (.replaceAll "'" "|'")
+                             (.replaceAll "\n" "|n")
+                             (.replaceAll "\r" "|r")
                              (.replaceAll "\\[" "|[")
                              (.replaceAll "\\]" "|]")))]
 
@@ -76,7 +79,7 @@
                      (println (str "##teamcity[testSuiteFinished name='" (ns-name (:ns m#)) "']")))
 
                    (when (= (:type m#) :begin-test-var)
-                     (println (str "##teamcity[testStarted name='" (test-name#)  "' captureStandardOutput='true']"))
+                     (println (str "##teamcity[testStarted name='" (test-name#) "' captureStandardOutput='true']"))
                      ((.getRawRoot #'clojure.test/report) m#))
 
                    (when (= (:type m#) :end-test-var)
