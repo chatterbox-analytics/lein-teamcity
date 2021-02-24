@@ -16,3 +16,5 @@ following content:
 and run `lein with-profile +teamcity do clean, test, jar`.
 
 Tests reporting requires leiningen 2.3.1+.
+
+---
